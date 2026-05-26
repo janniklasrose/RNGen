@@ -1,11 +1,13 @@
-function [vals] = generate(this, nVals, CurrentAxis)
+function [vals] = generate(this, nVals, nPdf, CurrentAxis)
 %GENERATE Generate random values and plot their distribution
 %
 %   Syntax:
 %       [vals] = GENERATE(nVals)
-%       [vals] = GENERATE(nVals, CurrentAxis)
+%       [vals] = GENERATE(nVals, nPdf)
+%       [vals] = GENERATE(nVals, nPdf, CurrentAxis)
 %   where
 %       nVals       - number of values to be generated
+%       nPdf        - optional number of points used to draw the pdf curve
 %       CurrentAxis - optional axis handle (uses current axis if not specified)
 %       vals        - row vector of size [1, nVals] containing the random values
 %
@@ -14,15 +16,21 @@ function [vals] = generate(this, nVals, CurrentAxis)
 %%% checks
 % number
 validateattributes(nVals, "numeric", ["scalar", "integer", "nonnegative", "finite"]); % allow 0
-% optional axis
+% optional args
+nPdfDefault = 1000;
 switch nargin()
     case 2
         ax = gca(); % get current axis
+        nPdf = nPdfDefault;
     case 3
+        validateattributes(nPdf, "numeric", ["scalar", "integer", "finite", "positive"]);
+        ax = gca(); % get current axis
+    case 4
+        validateattributes(nPdf, "numeric", ["scalar", "integer", "finite", "positive"]);
         validateattributes(CurrentAxis, "matlab.graphics.axis.Axes", "scalar");
         ax = CurrentAxis;
     otherwise
-        narginchk(2, 3);
+        narginchk(2, 4);
 end
 
 %%% statistics
@@ -30,7 +38,11 @@ end
 x_rnd = this.draw(nVals, "rnd");
 vals  = x_rnd; 
 % draw pdf
-[x_pdf, y_pdf] = this.draw(1000, "pdf"); % 1000 points should give a good plot
+[x_pdf, y_pdf] = this.draw(nPdf, "pdf");
+pdfMass = trapz(x_pdf, y_pdf);
+if isfinite(pdfMass) && pdfMass > 0
+    y_pdf = y_pdf / pdfMass; % match the range-truncated random draws
+end
 % histogram
 binEdges = linspace(this.range(1), this.range(2), 21); % 20 bins should look ok
 [binCounts, ~] = histcounts(x_rnd, binEdges, "Normalization", "pdf");

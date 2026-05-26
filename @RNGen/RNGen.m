@@ -112,7 +112,7 @@ classdef RNGen < handle
 
     %%% main methods
     methods(Access=public)
-        [vals] = generate(this, nVals, CurrentAxis)
+        [vals] = generate(this, nVals, nPdf, CurrentAxis)
         [yVals, xVals] = draw(this, nVals, rnd_or_pdf, stream)
     end
 
