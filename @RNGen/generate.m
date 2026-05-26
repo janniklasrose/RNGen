@@ -31,6 +31,10 @@ x_rnd = this.draw(nVals, "rnd");
 vals  = x_rnd; 
 % draw pdf
 [x_pdf, y_pdf] = this.draw(1000, "pdf"); % 1000 points should give a good plot
+pdfMass = trapz(x_pdf, y_pdf);
+if isfinite(pdfMass) && pdfMass > 0
+    y_pdf = y_pdf / pdfMass; % match the range-truncated random draws
+end
 % histogram
 binEdges = linspace(this.range(1), this.range(2), 21); % 20 bins should look ok
 [binCounts, ~] = histcounts(x_rnd, binEdges, "Normalization", "pdf");
