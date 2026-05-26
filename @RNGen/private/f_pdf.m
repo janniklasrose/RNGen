@@ -4,7 +4,7 @@ function [x_pdf, y_pdf] = f_pdf(nVals, law, range, params)
     x_pdf = linspace(range(1), range(2), nVals); % sampling points in row vector
     switch law % pick pdf (see >>edit pdf.m)
         case "uniform" % uniform distribution
-            y_pdf = unifpdf(x_pdf, params.uniform_a, params.uniform_b)/nVals; % normalize
+            y_pdf = unifpdf(x_pdf, params.uniform_a, params.uniform_b);
         case "normal" % normal distribution
             y_pdf = normpdf(x_pdf, params.normal_mu, params.normal_sigma);
         case "gamma" % gamma distribution
